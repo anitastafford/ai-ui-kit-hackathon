@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<!--
+  Landing page: AI Side Panel is on this page but hidden by default. Click "AI Side Panel" or "Open AI panel" to slide it in.
+  Per CLAUDE.md: static prototype; Burrito design system and assets/ for icons.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jane AI Prototype — Example Pages</title>
+  <style>
+    /*
+     * Token values aligned with Figma (Hackathon-2026 Core Design node 425-19264).
+     */
+    :root {
+      --background-color-default: #ffffff;
+      --background-color-neutral-default: #f9fafa;
+      --background-color-emphasis-subtle: #eafafb;
+      --border-color-default: #dde2e2;
+      --border-color-input: #bcc6c6;
+      --border-width-sm: 1px;
+      --border-radius-md: 4px;
+      --border-radius-lg: 8px;
+      --color-brand-20: #adecee;
+      --color-brand-50: #00BFC8;
+      --color-brand-80: #00787d;
+      --gradient-brand-stroke: linear-gradient(139deg, #722ED1 14.93%, var(--color-brand-50) 87.78%);
+      --color-neutral-10: #f9fafa;
+      --color-neutral-20: #ebeeee;
+      --color-neutral-30: #dde2e2;
+      --color-white: #ffffff;
+      --text-color-default: #161c1d;
+      --text-color-subdued: #587072;
+      --m-text-color-disabled: #798d8e;
+      --typography-fontFamily: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --typography-font-size-sm: 12px;
+      --typography-font-size-md: 14px;
+      --typography-font-size-lg: 16px;
+      --typography-font-size-xxl: 24px;
+      --typography-font-weight-regular: 400;
+      --typography-font-weight-semibold: 600;
+      --typography-line-height-sm: 16px;
+      --typography-line-height-md: 20px;
+      --typography-line-height-lg: 24px;
+      --typography-line-height-xl: 28px;
+      --typography-letter-spacing-sm: 0.5px;
+      --typography-letter-spacing-md: 0.4px;
+      --typography-letter-spacing-lg: 0.3px;
+      --size-0x: 0;
+      --size-2x: 8px;
+      --size-3x: 12px;
+      --size-4x: 16px;
+      --size-5x: 20px;
+      --size-6x: 24px;
+      --size-8x: 36px;
+      --spacing-1x: 4px;
+      --m-size-11x: 44px;
+      --icon-color-default: #161c1d;
+      --icon-color-subdued: #587072;
+      --icon-size-md: 16px;
+      --m-shadow-level-sm: 0px 1px 8px rgba(22, 28, 29, 0.08);
+      --Shadows-shadow-s: 0px 1px 4px rgba(22, 28, 29, 0.25);
+    }
+
+    .gradient-stroke {
+      border: var(--border-width-sm) solid transparent;
+      background: linear-gradient(var(--color-white), var(--color-white)) padding-box, var(--gradient-brand-stroke) border-box;
+      background-clip: padding-box, border-box;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--typography-fontFamily);
+      font-size: var(--typography-font-size-md);
+      line-height: var(--typography-line-height-md);
+      letter-spacing: var(--typography-letter-spacing-md);
+      color: var(--text-color-default);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Main content: full width when panel closed, shrinks when panel open */
+    .main-content {
+      position: fixed;
+      inset: 0;
+      background: var(--background-color-default);
+      display: flex;
+      flex-direction: column;
+      transition: inset 0.2s ease;
+      overflow: auto;
+    }
+
+    body.panel-open .main-content {
+      inset: 0 432px 0 0;
+    }
+
+    .main-content-inner {
+      padding: var(--size-6x);
+      flex: 1;
+    }
+
+    .main-content h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .main-content .landing-desc {
+      color: var(--text-color-subdued);
+      margin-bottom: var(--size-6x);
+    }
+
+    .nav {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--size-4x);
+      max-width: 32rem;
+    }
+
+    .nav a {
+      display: block;
+      padding: var(--size-4x);
+      background: #fff;
+      border: 1px solid var(--border-color-default);
+      border-radius: var(--border-radius-lg);
+      color: var(--color-brand-80);
+      text-decoration: none;
+      font-weight: 500;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .nav a:hover {
+      background: #f5f5f7;
+      border-color: var(--color-brand-80);
+    }
+
+    .landing-section {
+      margin-top: calc(var(--size-6x) + 24px);
+    }
+
+    .landing-section::before {
+      content: '';
+      display: block;
+      border-top: 1px solid var(--border-color-default);
+      max-width: 600px;
+      margin-top: 24px;
+      margin-bottom: 24px;
+    }
+
+    .landing-section:first-of-type::before {
+      display: none;
+    }
+
+    .landing-section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0;
+      color: var(--text-color-default);
+    }
+
+    .accordion-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: var(--size-2x);
+      padding: 0;
+      border: none;
+      background: none;
+      font: inherit;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: inherit;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .accordion-trigger:hover {
+      color: var(--color-brand-80);
+    }
+
+    .accordion-trigger:focus-visible {
+      outline: 2px solid var(--text-color-default);
+      outline-offset: 2px;
+      border-radius: var(--border-radius-md);
+    }
+
+    .accordion-panel {
+      margin-top: calc(var(--size-2x) + 20px);
+      padding-left: 16px;
+    }
+
+    .message-demo-wrap {
+      width: 400px;
+    }
+
+    .accordion.accordion--collapsed .accordion-panel {
+      display: none;
+    }
+
+    .submit-btn-demo {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* —— Side panel (hidden by default, slides in) —— */
+    .side-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 432px;
+      height: 100vh;
+      background: var(--background-color-default);
+      border-left: var(--border-width-sm) solid var(--border-color-default);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .side-panel.is-closed {
+      transform: translateX(100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .panel-header {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--size-4x);
+      background: var(--background-color-neutral-default);
+      border-bottom: var(--border-width-sm) solid var(--border-color-default);
+    }
+
+    .panel-header-inner {
+      display: flex;
+      align-items: center;
+      gap: var(--size-2x);
+      height: 36px;
+    }
+
+    .panel-header-icon {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--icon-color-default);
+    }
+
+    .panel-header-icon svg,
+    .panel-header-icon img { width: 100%; height: 100%; object-fit: contain; }
+
+    .panel-header-title {
+      font-size: var(--typography-font-size-xxl);
+      font-weight: var(--typography-font-weight-semibold);
+      line-height: var(--typography-line-height-xl);
+      letter-spacing: 0;
+      color: var(--text-color-default);
+    }
+
+    .panel-close {
+      width: var(--size-8x);
+      height: var(--size-8x);
+      border: none;
+      background: transparent;
+      border-radius: var(--border-radius-md);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--size-2x);
+      color: var(--icon-color-default);
+    }
+
+    .panel-close:hover,
+    .panel-close:focus-visible {
+      background: rgba(22, 28, 29, 0.06);
+      outline: none;
+    }
+
+    .panel-close svg,
+    .panel-close img { width: var(--icon-size-md); height: var(--icon-size-md); display: block; }
+
+    .panel-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--size-8x) var(--size-6x);
+      display: flex;
+      flex-direction: column;
+      gap: var(--size-5x);
+    }
+
+    .ai-message { display: flex; flex-direction: column; gap: var(--size-4x); }
+
+    .ai-message-text {
+      font-size: var(--typography-font-size-lg);
+      line-height: var(--typography-line-height-lg);
+      letter-spacing: var(--typography-letter-spacing-lg);
+      color: var(--text-color-default);
+    }
+
+    .ai-message-actions { display: flex; align-items: center; gap: 0; }
+
+    .icon-btn {
+      width: var(--size-8x); height: var(--size-8x);
+      border: none; background: transparent; border-radius: var(--border-radius-md);
+      cursor: pointer; display: flex; align-items: center; justify-content: center; padding: var(--size-2x);
+      color: var(--icon-color-default);
+    }
+
+    .icon-btn:hover,
+    .icon-btn:focus-visible {
+      background: rgba(22, 28, 29, 0.06);
+      outline: none;
+    }
+
+    .icon-btn svg,
+    .icon-btn img { width: var(--icon-size-md); height: var(--icon-size-md); display: block; }
+
+    .action-divider {
+      width: var(--icon-size-md);
+      height: var(--icon-size-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--icon-color-subdued);
+      opacity: 0.65;
+    }
+
+    .action-divider svg,
+    .action-divider img { width: 100%; height: 100%; display: block; }
+
+    .suggestion-chips { display: flex; flex-wrap: wrap; gap: var(--size-2x); }
+
+    .chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      min-height: 28px;
+      padding: var(--spacing-1x) var(--size-3x) var(--spacing-1x) var(--size-2x);
+      border: var(--border-width-sm) solid var(--border-color-input);
+      border-radius: 100px;
+      font-family: var(--typography-fontFamily);
+      font-size: var(--typography-font-size-md);
+      line-height: var(--typography-line-height-md);
+      letter-spacing: var(--typography-letter-spacing-md);
+      color: var(--text-color-default);
+      background: var(--color-white);
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .chip:hover {
+      background: var(--background-color-neutral-default);
+      border-color: var(--border-color-default);
+    }
+
+    .chip:focus-visible {
+      background: var(--background-color-neutral-default);
+      outline: none;
+      box-shadow: 0 0 0 2px var(--color-white), 0 0 0 4px var(--color-brand-80);
+    }
+
+    .chip:active {
+      transform: scale(0.99);
+      background: var(--border-color-default);
+    }
+
+    .chip svg,
+    .chip img { width: var(--icon-size-md); height: var(--icon-size-md); flex-shrink: 0; }
+
+    .conversation-divider {
+      display: flex; flex-direction: column; gap: var(--size-3x); align-items: center;
+      padding: var(--size-2x) 0 var(--size-3x);
+    }
+
+    .conversation-divider hr {
+      width: 100%; border: none; border-top: var(--border-width-sm) solid var(--border-color-default); margin: 0;
+    }
+
+    .conversation-divider .date {
+      font-size: var(--typography-font-size-md);
+      font-weight: var(--typography-font-weight-semibold);
+      letter-spacing: var(--typography-letter-spacing-md);
+      color: var(--text-color-default);
+    }
+
+    .user-message-row {
+      display: flex; flex-direction: column; align-items: flex-end; gap: var(--size-2x);
+    }
+
+    .user-bubble {
+      max-width: 316px;
+      padding: var(--size-3x);
+      background: var(--background-color-emphasis-subtle);
+      border: var(--border-width-sm) solid var(--color-brand-20);
+      border-radius: var(--border-radius-lg);
+      font-size: var(--typography-font-size-lg);
+      line-height: var(--typography-line-height-lg);
+      letter-spacing: var(--typography-letter-spacing-lg);
+      color: var(--text-color-default);
+    }
+
+    .user-message-actions { display: flex; align-items: center; gap: var(--size-3x); }
+
+    .panel-footer {
+      flex-shrink: 0;
+      background: var(--color-neutral-10);
+      padding: var(--size-4x) var(--size-6x);
+      min-height: 68px;
+      display: flex;
+      flex-direction: column;
+      gap: var(--size-5x);
+      box-shadow: var(--Shadows-shadow-s);
+    }
+
+    .prompt-input {
+      display: flex;
+      flex-direction: column;
+      gap: var(--size-2x);
+      padding: var(--size-3x);
+      background: var(--background-color-default);
+      border: var(--border-width-sm) solid var(--border-color-default);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--m-shadow-level-sm);
+    }
+
+    .prompt-input--landing { max-width: 400px; }
+
+    .prompt-input-row { display: flex; align-items: center; gap: var(--size-2x); }
+
+    .prompt-input-row input {
+      flex: 1;
+      min-height: var(--m-size-11x);
+      border: none;
+      background: transparent;
+      font-family: var(--typography-fontFamily);
+      font-size: var(--typography-font-size-md);
+      line-height: var(--typography-line-height-md);
+      letter-spacing: var(--typography-letter-spacing-md);
+      color: var(--text-color-default);
+      outline: none;
+    }
+
+    .prompt-input-row input::placeholder { color: var(--m-text-color-disabled); }
+
+    .prompt-input-actions { display: flex; align-items: center; gap: var(--spacing-1x); }
+
+    /* Prompt Submit Button — states from Figma node 392-25706 */
+    .prompt-submit-btn {
+      width: var(--size-8x); height: var(--size-8x);
+      border-radius: var(--border-radius-md);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      padding: var(--size-2x);
+      flex-shrink: 0;
+      transition: background 0.15s ease, background-clip 0.15s ease, border 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
+    }
+
+    /* Default: white fill, gradient stroke */
+    .prompt-submit-btn.gradient-stroke:not(:disabled) {
+      border: var(--border-width-sm) solid transparent;
+      background: linear-gradient(var(--color-white), var(--color-white)) padding-box, var(--gradient-brand-stroke) border-box;
+      background-clip: padding-box, border-box;
+    }
+
+    /* Hover: neutral/default fill (#f9fafa), gradient stroke */
+    .prompt-submit-btn.gradient-stroke:hover:not(:disabled) {
+      background: linear-gradient(var(--background-color-neutral-default), var(--background-color-neutral-default)) padding-box, var(--gradient-brand-stroke) border-box;
+      background-clip: padding-box, border-box;
+    }
+
+    /* Active (pressed): neutral/strong fill (#ebeeee), gradient stroke, scale animation */
+    .prompt-submit-btn.gradient-stroke:active:not(:disabled) {
+      border: var(--border-width-sm) solid transparent;
+      background: linear-gradient(var(--color-neutral-20), var(--color-neutral-20)) padding-box, var(--gradient-brand-stroke) border-box;
+      background-clip: padding-box, border-box;
+      transform: scale(0.97);
+    }
+
+    /* Focus: white fill, gradient stroke, brand focus ring */
+    .prompt-submit-btn:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 2px var(--color-white), 0 0 0 4px var(--color-brand-80);
+    }
+
+    /* Disabled: neutral/30 fill, default border */
+    .prompt-submit-btn:disabled {
+      cursor: default;
+      border: var(--border-width-sm) solid var(--border-color-default);
+      background: var(--color-neutral-30);
+      background-clip: padding-box;
+    }
+
+    /* Processing (Stop): same default/hover/active as Submit */
+    .prompt-submit-btn.is-processing.gradient-stroke {
+      border: var(--border-width-sm) solid transparent;
+      background: linear-gradient(var(--color-white), var(--color-white)) padding-box, var(--gradient-brand-stroke) border-box;
+      background-clip: padding-box, border-box;
+    }
+
+    .prompt-submit-btn.is-processing.gradient-stroke:hover {
+      background: linear-gradient(var(--background-color-neutral-default), var(--background-color-neutral-default)) padding-box, var(--gradient-brand-stroke) border-box;
+      background-clip: padding-box, border-box;
+    }
+
+    .prompt-submit-btn.is-processing.gradient-stroke:active {
+      border: var(--border-width-sm) solid transparent;
+      background: linear-gradient(var(--color-neutral-20), var(--color-neutral-20)) padding-box, var(--gradient-brand-stroke) border-box;
+      background-clip: padding-box, border-box;
+      transform: scale(0.97);
+    }
+
+    .prompt-submit-btn svg,
+    .prompt-submit-btn img {
+      width: var(--icon-size-md); height: var(--icon-size-md);
+      display: block;
+    }
+
+    .prompt-submit-btn .prompt-submit-icon--stop { display: none; }
+    .prompt-submit-btn.is-processing .prompt-submit-icon--submit { display: none; }
+    .prompt-submit-btn.is-processing .prompt-submit-icon--stop { display: block; }
+
+    .panel-disclaimer {
+      font-size: var(--typography-font-size-sm);
+      line-height: var(--typography-line-height-sm);
+      letter-spacing: var(--typography-letter-spacing-sm);
+      color: var(--text-color-subdued);
+      text-align: center;
+      margin: 0;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: var(--size-4x);
+      padding: var(--size-2x) var(--size-4x);
+      font-family: var(--typography-fontFamily);
+      font-size: var(--typography-font-size-md);
+      background: var(--background-color-default);
+      border: var(--border-width-sm) solid var(--border-color-default);
+      border-radius: var(--border-radius-md);
+      color: var(--text-color-default);
+      z-index: 100;
+      transition: top 0.2s ease;
+    }
+
+    .skip-link:focus {
+      top: var(--size-4x);
+      outline: 2px solid var(--text-color-default);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <a href="#side-panel-content" class="skip-link">Skip to AI panel</a>
+
+  <main id="main-content" class="main-content" role="main">
+    <div class="main-content-inner">
+      <h1>Jane AI Prototype</h1>
+      <p class="landing-desc">Burrito design system — example pages from the Hackathon 2026 Core Design.</p>
+      <ul class="nav" aria-label="Example pages">
+        <li><a href="#" id="openPanelNavLink" class="nav-open-panel">AI Side Panel</a></li>
+      </ul>
+
+      <section class="landing-section accordion accordion--collapsed" id="accordion-prompt-submit">
+        <h2 class="landing-section-title">
+          <button type="button" class="accordion-trigger" aria-expanded="false" aria-controls="accordion-panel-prompt-submit" id="accordion-trigger-prompt-submit">
+            Prompt Submit Button
+          </button>
+        </h2>
+        <div id="accordion-panel-prompt-submit" class="accordion-panel" role="region" aria-labelledby="accordion-trigger-prompt-submit">
+        <div class="submit-btn-demo">
+          <button type="button" class="prompt-submit-btn gradient-stroke" aria-label="Send" title="Send">
+            <img src="assets/paper-plane.svg" alt="" width="16" height="16">
+          </button>
+        </div>
+        </div>
+      </section>
+
+      <section class="landing-section accordion accordion--collapsed" id="accordion-prompt-input">
+        <h2 class="landing-section-title">
+          <button type="button" class="accordion-trigger" aria-expanded="false" aria-controls="accordion-panel-prompt-input" id="accordion-trigger-prompt-input">
+            Prompt Input
+          </button>
+        </h2>
+        <div id="accordion-panel-prompt-input" class="accordion-panel" role="region" aria-labelledby="accordion-trigger-prompt-input">
+        <div class="prompt-input prompt-input--landing">
+          <div class="prompt-input-row">
+            <input type="text" placeholder="How can I help you today?" aria-label="Message" autocomplete="off">
+            <div class="prompt-input-actions">
+              <button type="button" class="icon-btn" aria-label="Voice input"><img src="assets/microphone.svg" alt="" width="16" height="16"></button>
+              <button type="button" class="prompt-submit-btn gradient-stroke" aria-label="Send"><img src="assets/paper-plane.svg" alt="" width="16" height="16"></button>
+            </div>
+          </div>
+          <div class="prompt-input-actions">
+            <button type="button" class="icon-btn" aria-label="Attach"><img src="assets/plus.svg" alt="" width="16" height="16"></button>
+          </div>
+        </div>
+        </div>
+      </section>
+
+      <section class="landing-section accordion accordion--collapsed" id="accordion-suggestion-chips">
+        <h2 class="landing-section-title">
+          <button type="button" class="accordion-trigger" aria-expanded="false" aria-controls="accordion-panel-suggestion-chips" id="accordion-trigger-suggestion-chips">
+            Suggestion Chips
+          </button>
+        </h2>
+        <div id="accordion-panel-suggestion-chips" class="accordion-panel" role="region" aria-labelledby="accordion-trigger-suggestion-chips">
+        <div class="suggestion-chips">
+          <button type="button" class="chip">
+            <img src="assets/sparkles.svg" alt="" width="16" height="16">Tell me more
+          </button>
+          <button type="button" class="chip">
+            <img src="assets/sparkles.svg" alt="" width="16" height="16">Review chart
+          </button>
+          <button type="button" class="chip">
+            <img src="assets/sparkles.svg" alt="" width="16" height="16">What else can you help me with?
+          </button>
+        </div>
+        </div>
+      </section>
+
+      <section class="landing-section accordion accordion--collapsed" id="accordion-user-message">
+        <h2 class="landing-section-title">
+          <button type="button" class="accordion-trigger" aria-expanded="false" aria-controls="accordion-panel-user-message" id="accordion-trigger-user-message">
+            User Message
+          </button>
+        </h2>
+        <div id="accordion-panel-user-message" class="accordion-panel" role="region" aria-labelledby="accordion-trigger-user-message">
+          <div class="message-demo-wrap">
+            <div class="user-message-row">
+              <div class="user-bubble">I am a Jane helper and I really need your help with something to make my life easier.</div>
+              <div class="user-message-actions">
+                <button type="button" class="icon-btn" aria-label="Copy"><img src="assets/copy.svg" alt="" width="16" height="16"></button>
+                <button type="button" class="icon-btn" aria-label="Edit"><img src="assets/edit.svg" alt="" width="16" height="16"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="landing-section accordion accordion--collapsed" id="accordion-ai-message">
+        <h2 class="landing-section-title">
+          <button type="button" class="accordion-trigger" aria-expanded="false" aria-controls="accordion-panel-ai-message" id="accordion-trigger-ai-message">
+            AI Message
+          </button>
+        </h2>
+        <div id="accordion-panel-ai-message" class="accordion-panel" role="region" aria-labelledby="accordion-trigger-ai-message">
+          <div class="message-demo-wrap">
+            <div class="ai-message">
+              <div class="ai-message-text">
+                <span>Response from Jane AI. </span>
+                Boursin fromage frais cheese slices. Cheese and wine cheese triangles stinking bishop when the cheese comes out everybody's happy.
+              </div>
+              <div class="ai-message-actions">
+                <button type="button" class="icon-btn" aria-label="Reload"><img src="assets/arrow-rotate-right.svg" alt="" width="16" height="16"></button>
+                <button type="button" class="icon-btn" aria-label="Copy"><img src="assets/copy.svg" alt="" width="16" height="16"></button>
+                <span class="action-divider" aria-hidden="true"><svg viewBox="0 0 16 16" aria-hidden="true"><line x1="8" y1="2" x2="8" y2="14" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></span>
+                <button type="button" class="icon-btn" aria-label="Thumbs up"><img src="assets/thumbs-up.svg" alt="" width="16" height="16"></button>
+                <button type="button" class="icon-btn" aria-label="Thumbs down"><img src="assets/thumbs-down.svg" alt="" width="16" height="16"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <aside class="side-panel is-closed" id="sidePanel" role="complementary" aria-label="Jane AI assistant">
+    <header class="panel-header">
+      <div class="panel-header-inner">
+        <div class="panel-header-icon" aria-hidden="true">
+          <img src="assets/Union.svg" alt="" width="28" height="28">
+        </div>
+        <span class="panel-header-title">Panel header</span>
+      </div>
+      <button type="button" class="panel-close" id="closePanelBtn" aria-label="Close panel">
+        <img src="assets/close.svg" alt="" width="16" height="16">
+      </button>
+    </header>
+
+    <div class="panel-content" id="side-panel-content" role="region" aria-label="Conversation">
+      <div class="ai-message">
+        <div class="ai-message-text">
+          <span>Response from Jane AI. </span>
+          Paneer lancashire stilton cheesecake cheese and wine cow parmesan camembert de normandie feta babybel, fromage port-salut st. agur blue cheese cottage cheese cauliflower cheese jarlsberg cut the cheese pepper jack, cheese on toast fromage frais roquefort squirty cheese rubber cheese cheese strings bavarian bergkase goat.
+        </div>
+        <div class="ai-message-actions">
+          <button type="button" class="icon-btn" aria-label="Reload"><img src="assets/arrow-rotate-right.svg" alt="" width="16" height="16"></button>
+          <button type="button" class="icon-btn" aria-label="Copy"><img src="assets/copy.svg" alt="" width="16" height="16"></button>
+          <span class="action-divider" aria-hidden="true"><svg viewBox="0 0 16 16" aria-hidden="true"><line x1="8" y1="2" x2="8" y2="14" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></span>
+          <button type="button" class="icon-btn" aria-label="Thumbs up"><img src="assets/thumbs-up.svg" alt="" width="16" height="16"></button>
+          <button type="button" class="icon-btn" aria-label="Thumbs down"><img src="assets/thumbs-down.svg" alt="" width="16" height="16"></button>
+        </div>
+        <div class="suggestion-chips">
+          <button type="button" class="chip" data-chip-text="Tell me more"><img src="assets/sparkles.svg" alt="" width="16" height="16">Tell me more</button>
+          <button type="button" class="chip" data-chip-text="Review chart"><img src="assets/sparkles.svg" alt="" width="16" height="16">Review chart</button>
+          <button type="button" class="chip" data-chip-text="What else can you help me with?"><img src="assets/sparkles.svg" alt="" width="16" height="16">What else can you help me with?</button>
+        </div>
+      </div>
+
+      <div class="conversation-divider">
+        <hr>
+        <span class="date">TODAY</span>
+      </div>
+
+      <div class="user-message-row">
+        <div class="user-bubble">I am a Jane helper and I really need your help with something to make my life easier.</div>
+        <div class="user-message-actions">
+          <button type="button" class="icon-btn" aria-label="Copy"><img src="assets/copy.svg" alt="" width="16" height="16"></button>
+          <button type="button" class="icon-btn" aria-label="Edit"><img src="assets/edit.svg" alt="" width="16" height="16"></button>
+        </div>
+      </div>
+
+      <div class="ai-message">
+        <div class="ai-message-text">
+          <span>Response from Jane AI. </span>
+          Boursin fromage frais cheese slices. Cheese and wine cheese triangles stinking bishop when the cheese comes out everybody's happy.
+        </div>
+        <div class="ai-message-actions">
+          <button type="button" class="icon-btn" aria-label="Reload"><img src="assets/arrow-rotate-right.svg" alt="" width="16" height="16"></button>
+          <button type="button" class="icon-btn" aria-label="Copy"><img src="assets/copy.svg" alt="" width="16" height="16"></button>
+          <span class="action-divider" aria-hidden="true"><svg viewBox="0 0 16 16" aria-hidden="true"><line x1="8" y1="2" x2="8" y2="14" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></span>
+          <button type="button" class="icon-btn" aria-label="Thumbs up"><img src="assets/thumbs-up.svg" alt="" width="16" height="16"></button>
+          <button type="button" class="icon-btn" aria-label="Thumbs down"><img src="assets/thumbs-down.svg" alt="" width="16" height="16"></button>
+        </div>
+        <div class="suggestion-chips">
+          <button type="button" class="chip" data-chip-text="What else can you help me with?"><img src="assets/sparkles.svg" alt="" width="16" height="16">What else can you help me with?</button>
+        </div>
+      </div>
+
+      <div class="user-message-row">
+        <div class="user-bubble">Another prompt from Jane practitioner or patient</div>
+        <div class="user-message-actions">
+          <button type="button" class="icon-btn" aria-label="Copy"><img src="assets/copy.svg" alt="" width="16" height="16"></button>
+          <button type="button" class="icon-btn" aria-label="Edit"><img src="assets/edit.svg" alt="" width="16" height="16"></button>
+        </div>
+      </div>
+
+      <div class="ai-message">
+        <div class="ai-message-text">
+          Next response from Jane AI. Port-salut st. agur blue cheese cottage cheese cauliflower cheese jarlsberg cut the cheese pepper jack, cheese on toast fromage frais roquefort squirty cheese rubber cheese cheese strings bavarian bergkase goat.
+        </div>
+        <div class="ai-message-actions">
+          <button type="button" class="icon-btn" aria-label="Reload"><img src="assets/arrow-rotate-right.svg" alt="" width="16" height="16"></button>
+          <button type="button" class="icon-btn" aria-label="Copy"><img src="assets/copy.svg" alt="" width="16" height="16"></button>
+          <span class="action-divider" aria-hidden="true"><svg viewBox="0 0 16 16" aria-hidden="true"><line x1="8" y1="2" x2="8" y2="14" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></span>
+          <button type="button" class="icon-btn" aria-label="Thumbs up"><img src="assets/thumbs-up.svg" alt="" width="16" height="16"></button>
+          <button type="button" class="icon-btn" aria-label="Thumbs down"><img src="assets/thumbs-down.svg" alt="" width="16" height="16"></button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="panel-footer">
+      <div class="prompt-input">
+        <div class="prompt-input-row">
+          <input type="text" id="promptInput" placeholder="How can I help you today?" aria-label="Message" autocomplete="off">
+          <div class="prompt-input-actions">
+            <button type="button" class="icon-btn" id="voiceBtn" aria-label="Voice input">
+              <img src="assets/microphone.svg" alt="" width="16" height="16">
+            </button>
+            <button type="button" class="prompt-submit-btn gradient-stroke" id="sendBtn" aria-label="Send" title="Send">
+              <img src="assets/paper-plane.svg" alt="" width="16" height="16" class="prompt-submit-icon prompt-submit-icon--submit">
+              <span class="prompt-submit-icon prompt-submit-icon--stop" aria-hidden="true"><svg viewBox="0 0 16 16" fill="currentColor" width="16" height="16"><rect x="4" y="4" width="8" height="8" rx="1"/></svg></span>
+            </button>
+          </div>
+        </div>
+        <div class="prompt-input-actions">
+          <button type="button" class="icon-btn" id="attachBtn" aria-label="Attach">
+            <img src="assets/plus.svg" alt="" width="16" height="16">
+          </button>
+        </div>
+      </div>
+      <p class="panel-disclaimer">
+        Jane AI can make mistakes.<br>
+        Make sure you double check important details.
+      </p>
+    </footer>
+  </aside>
+
+  <script>
+    (function () {
+      // Accordions: toggle content on header click
+      document.querySelectorAll('.accordion').forEach(function (section) {
+        var trigger = section.querySelector('.accordion-trigger');
+        if (!trigger) return;
+        trigger.addEventListener('click', function () {
+          var expanded = trigger.getAttribute('aria-expanded') === 'true';
+          trigger.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+          section.classList.toggle('accordion--collapsed', expanded);
+        });
+      });
+
+      var panel = document.getElementById('sidePanel');
+      var closeBtn = document.getElementById('closePanelBtn');
+      var openPanelNavLink = document.getElementById('openPanelNavLink');
+      var content = document.getElementById('side-panel-content');
+      var promptInput = document.getElementById('promptInput');
+      var sendBtn = document.getElementById('sendBtn');
+
+      function closePanel() {
+        panel.classList.add('is-closed');
+        document.body.classList.remove('panel-open');
+      }
+
+      function openPanel() {
+        panel.classList.remove('is-closed');
+        document.body.classList.add('panel-open');
+      }
+
+      closeBtn.addEventListener('click', closePanel);
+
+      if (openPanelNavLink) {
+        openPanelNavLink.addEventListener('click', function (e) {
+          e.preventDefault();
+          if (panel.classList.contains('is-closed')) {
+            openPanel();
+          } else {
+            closePanel();
+          }
+        });
+      }
+
+      function addUserMessage(text) {
+        var row = document.createElement('div');
+        row.className = 'user-message-row';
+        row.innerHTML =
+          '<div class="user-bubble">' + escapeHtml(text) + '</div>' +
+          '<div class="user-message-actions">' +
+          '<button type="button" class="icon-btn" aria-label="Copy"><img src="assets/copy.svg" alt="" width="16" height="16"></button>' +
+          '<button type="button" class="icon-btn" aria-label="Edit"><img src="assets/edit.svg" alt="" width="16" height="16"></button>' +
+          '</div>';
+        content.appendChild(row);
+        content.scrollTop = content.scrollHeight;
+      }
+
+      function escapeHtml(s) {
+        var div = document.createElement('div');
+        div.textContent = s;
+        return div.innerHTML;
+      }
+
+      function sendMessage() {
+        var text = (promptInput.value || '').trim();
+        if (!text) return;
+        addUserMessage(text);
+        promptInput.value = '';
+        setStopState();
+        processingTimeoutId = setTimeout(function () {
+          processingTimeoutId = null;
+          setSubmitState();
+          var ai = document.createElement('div');
+          ai.className = 'ai-message';
+          ai.innerHTML =
+            '<div class="ai-message-text">Response from Jane AI. Got it — I\'ll look into that.</div>' +
+            '<div class="ai-message-actions">' +
+            '<button type="button" class="icon-btn" aria-label="Reload"><img src="assets/arrow-rotate-right.svg" alt="" width="16" height="16"></button>' +
+            '<button type="button" class="icon-btn" aria-label="Copy"><img src="assets/copy.svg" alt="" width="16" height="16"></button>' +
+            '<span class="action-divider" aria-hidden="true"><svg viewBox="0 0 16 16" aria-hidden="true"><line x1="8" y1="2" x2="8" y2="14" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></span>' +
+            '<button type="button" class="icon-btn" aria-label="Thumbs up"><img src="assets/thumbs-up.svg" alt="" width="16" height="16"></button>' +
+            '<button type="button" class="icon-btn" aria-label="Thumbs down"><img src="assets/thumbs-down.svg" alt="" width="16" height="16"></button>' +
+            '</div>';
+          content.appendChild(ai);
+          content.scrollTop = content.scrollHeight;
+        }, 400);
+      }
+
+      var processingTimeoutId = null;
+
+      function setSubmitState() {
+        sendBtn.classList.remove('is-processing');
+        sendBtn.setAttribute('aria-label', 'Send');
+        sendBtn.setAttribute('title', 'Send');
+      }
+
+      function setStopState() {
+        sendBtn.classList.add('is-processing');
+        sendBtn.setAttribute('aria-label', 'Stop');
+        sendBtn.setAttribute('title', 'Stop');
+      }
+
+      function stopProcessing() {
+        if (processingTimeoutId !== null) {
+          clearTimeout(processingTimeoutId);
+          processingTimeoutId = null;
+        }
+        setSubmitState();
+      }
+
+      sendBtn.addEventListener('click', function () {
+        if (sendBtn.classList.contains('is-processing')) {
+          stopProcessing();
+          return;
+        }
+        sendMessage();
+      });
+
+      promptInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          if (sendBtn.classList.contains('is-processing')) return;
+          sendMessage();
+        }
+      });
+
+      document.querySelectorAll('.chip[data-chip-text]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var text = this.getAttribute('data-chip-text');
+          if (text) {
+            promptInput.value = text;
+            promptInput.focus();
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
