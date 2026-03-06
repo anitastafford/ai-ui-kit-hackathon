@@ -46,8 +46,9 @@ Check Storybook for the correct component name, prop names, and accepted values.
 **Always use the Figma MCP to inspect a design before writing any code.** When I share a Figma URL:
 
 1. Use the Figma MCP to inspect layout, components, spacing, and hierarchy
+2. When given a Figma URL, extract the node-id param and pass it to `get_design_context`
 2. Identify all Figma components and map them to Burrito equivalents (e.g., Figma "Button/Primary" → `<Button variant="primary">`)
-3. Identify all Figma tokens (color, spacing, typography) and map them to Burrito token equivalents — do not create custom styles for values that already exist in Burrito
+3. Identify all Figma tokens (color, spacing, typography) and styles and map them to Burrito token equivalents — do not create custom styles for values that already exist in Burrito
 4. Flag anything with no Burrito match before proceeding
 5. See `docs/figma-to-burrito-mapping.md` for the mapping (if created)
 
